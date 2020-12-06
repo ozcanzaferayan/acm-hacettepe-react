@@ -1,16 +1,13 @@
-import React from 'react'
+import React from "react";
 
-const StudentsInput = (props) => {
-
-    return (
-        <input
-        id="myInput2"
-        type="text"
-        name="name"
-        value={props.currentName}
-        onChange={props.handleInputChange}
-      />
-    )
-}
-
+const StudentsInput = React.forwardRef((props, ref) => (
+  <input
+    id="myInput"
+    type="text"
+    name="name"
+    ref={ref}
+    value={props.currentName}
+    onChange={props.handleInputChange}
+  />
+));
 export default StudentsInput;

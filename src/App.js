@@ -1,79 +1,41 @@
 import { useState, useRef, useEffect } from "react";
-import uuidv4 from "./utils/AppUtil";
 import "./App.css";
 import StudentsContainer from "./components/StudentsContainer";
 import StudentsInput from "./components/StudentsInput";
-import StudentsButton from "./components/StudentsButton";
+import StudentsAddButton from "./components/StudentsAddButton";
 
 function App() {
   const [students, setStudents] = useState([]);
   const [currentName, setCurrentName] = useState("");
+  const inputEl = useRef(null);
 
   useEffect(() => {
     fetch("http://localhost:3005/students")
       .then((response) => response.json())
-      .then((students) => setStudents(students));
+      .then((students) => setStudents(students))
+      .catch((error) => console.log("Hata", error));
   }, []);
 
-  const addStudent = () => {
-    if (currentName === "") {
-      alert("Please enter student name");
-      return;
-    }
-    const id = uuidv4();
-    setStudents((prevValues) => [...prevValues, { id: id, name: currentName }]);
-    setCurrentName("");
-    saveStudentIntoServer(id, currentName);
-  };
-
-  const saveStudentIntoServer = (id, studentName) => {
-    fetch("http://localhost:3005/students", {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ id: id, name: studentName }),
-    })
-      .then((response) => response.json())
-      .then((data) => console.log("Saved", data))
-      .catch((error) => console.error(error));
-  };
-
-  const inputChange = (event) => {
-    setCurrentName(event.target.value);
-  };
-
-  const deleteStudent = (id) => {
-    var newStudents = [];
-    for (let i = 0; i < students.length; i++) {
-      const student = students[i];
-      if (student.id === id) {
-        continue;
-      }
-      newStudents.push(student);
-    }
-    setStudents(newStudents);
-    fetch(`http://localhost:3005/students/${id}`, {
-      method: "DELETE",
-    })
-      .then((response) => response.json())
-      .then((data) => console.log("Deleted", data))
-      .catch((error) => console.error(error));
-  };
-
   return (
-    <div>
-      <StudentsContainer
-        students={students}
-        handleDeleteStudent={deleteStudent}
-      />
+    <>
+      <StudentsContainer students={students} handleSetStudents={setStudents} />
       <StudentsInput
+        ref={inputEl}
         currentName={currentName}
-        handleInputChange={inputChange}
+        handleInputChange={(e) => setCurrentName(e.target.value)}
       />
-      <StudentsButton handleAddStudent={addStudent} />
-    </div>
+      <StudentsAddButton
+        inputEl={inputEl}
+        currentName={currentName}
+        handleSetCurrentName={setCurrentName}
+        handleSetStudents={(id, currentName) =>
+          setStudents((prevValues) => [
+            ...prevValues,
+            { id: id, name: currentName },
+          ])
+        }
+      />
+    </>
   );
 }
 
