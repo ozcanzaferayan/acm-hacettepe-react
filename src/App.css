@@ -36,3 +36,13 @@
     transform: rotate(360deg);
   }
 }
+
+.myBtn {
+  background: none;
+  border: 0;
+  background-color: dodgerblue;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 5px;
+  margin-left: 5px;
+}
